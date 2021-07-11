@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+    elastic-search:
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
+        ports:
+            - "9300:9300"
+            - "9200:9200"
+        volumes:
+            - ./es-volume
+        hostname: es-service
+        networks: 
+            - es-network
+
+    kibana:
+        image: docker.elastic.co/kibana/kibana:6.2.2
+        ports:
+            - "5601:5601"
+        volumes:
+            - ./kibana-volume
+        depends_on:
+            - elastic-search
+        links: 
+            - elastic-search
+        environment:
+            - "ELASTICSEARCH_URL=http://es-service:9200"
+        networks: 
+            - es-network
+
+networks:
+    es-network:
+        driver: "bridge"
